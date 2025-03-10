@@ -43,7 +43,7 @@ products_schema = ProductSchema(many=True)
 def index():
     return jsonify({"message": "Hello World"})
 
-# Create project
+# Create product
 @app.route('/products', methods=['POST'])
 def create_product():
     name = request.json['name']
@@ -64,10 +64,37 @@ def get_products():
     result = products_schema.dump(products)
     return jsonify(result)
 
-#Get single product
+# Get single product
 @app.route('/products/<id>', methods=['GET'])
 def get_single_products(id):
     product = Product.query.get(id)
+    return product_schema.jsonify(product)
+
+# Update product
+@app.route('/products/<id>', methods=['PUT'])
+def update_product(id):
+    product = Product.query.get(id)
+
+    name = request.json['name']
+    description = request.json['description']
+    price = request.json['price']
+    quantity = request.json['quantity']
+
+    product.name = name
+    product.description = description
+    product.price = price
+    product.quantity = quantity
+
+    db.session.commit()
+
+    return product_schema.jsonify(product)
+
+# Delete product
+@app.route('/products/<id>', methods=['DELETE'])
+def delete_product(id):
+    product = Product.query.get(id)
+    db.session.delete(product)
+    db.session.commit()
     return product_schema.jsonify(product)
 
 # Run server
