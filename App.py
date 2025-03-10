@@ -31,13 +31,35 @@ class Product(db.Model):
         self.quantity = quantity
 
 # Product schema
+class ProductSchema(ma.Schema):
+    class Meta:
+        fields = ('id', 'name', 'description', 'price', 'quantity')
 
+# Initialize schema
+product_schema = ProductSchema()
+products_schema = ProductSchema(many=True)
 
 @app.route('/', methods=['GET'])
 def index():
     return jsonify({"message": "Hello World"})
 
+# Create project
+@app.route('/products', methods=['POST'])
+def create_product():
+    name = request.json['name']
+    description = request.json['description']
+    price = request.json['price']
+    quantity = request.json['quantity']
+
+    new_product = Product(name, description, price, quantity)
+    db.session.add(new_product)
+    db.session.commit()
+
+    return product_schema.jsonify(new_product)
+
 # Run server
 if __name__=='__main__':
+    # with app.app_context():
+    #     db.create_all()
     app.run(debug=True)
 
