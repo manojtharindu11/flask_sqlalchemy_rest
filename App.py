@@ -57,6 +57,19 @@ def create_product():
 
     return product_schema.jsonify(new_product)
 
+# Get all products
+@app.route('/products', methods=['GET'])
+def get_products():
+    products = Product.query.all()
+    result = products_schema.dump(products)
+    return jsonify(result)
+
+#Get single product
+@app.route('/products/<id>', methods=['GET'])
+def get_single_products(id):
+    product = Product.query.get(id)
+    return product_schema.jsonify(product)
+
 # Run server
 if __name__=='__main__':
     # with app.app_context():
